@@ -14,61 +14,61 @@ export class CommentService {
 
   async createComment(createCommentDTO: CreateCommentDto) {
     const { parentCommentId, ...commentData } = createCommentDTO;
+
     if (!parentCommentId) {
-      return await this.commentRepository.save(createCommentDTO);
+      const newComment = this.commentRepository.create({
+        ...commentData,
+      });
+      return await this.commentRepository.save(newComment);
     }
-    const newComment = parentCommentId
-      ? {
-          parentComment: { id: parentCommentId },
-          ...commentData,
-        }
-      : commentData;
+
+    const parentComment = await this.commentRepository.findOne({
+      where: {
+        id: parentCommentId,
+      },
+    });
+
+    if (!parentComment) {
+      return null;
+    }
+
+    const newComment = this.commentRepository.create({
+      ...commentData,
+      parent: parentComment,
+    });
+
     return await this.commentRepository.save(newComment);
   }
   async getAllComments() {
-    return await this.commentRepository.find({
-      where: {
-        parentCommentId: null,
-      },
-      order: { dateCreated: 'ASC' },
-      relations: { childrenComments: true },
-    });
+    return await this.commentRepository.manager
+      .getTreeRepository(CommentEntity)
+      .findTrees();
   }
-  async getAllUserComments(email: string) {
-    return await this.commentRepository.find({
-      where: {
-        email,
-      },
-      order: { dateCreated: 'ASC' },
-      // relations: { parentComment: true, childrenComments: true },
-    });
+  async findComments(searchParams: Partial<CommentEntity>) {
+    return await this.commentRepository.manager
+      .getTreeRepository(CommentEntity)
+      .find({ where: { ...searchParams } });
   }
   async getOneComment(id: string) {
-    const comment = await this.commentRepository.findOne({
-      where: {
-        id,
-      },
-      relations: { parentComment: true, childrenComments: true },
-    });
+    const comment = await this.commentRepository.manager
+      .getTreeRepository(CommentEntity)
+      .find({ where: { id } });
+
     if (!comment) {
       throw new NotFoundException('Comment not found');
     }
 
     return comment;
   }
+
   async updateComment(id: string, updateCommentDTO: UpdateCommentDto) {
     const comment = await this.getOneComment(id);
-    if (!comment) {
-      throw new NotFoundException('Comment not found');
-    }
     Object.assign(comment, updateCommentDTO);
     return await this.commentRepository.save(comment);
   }
+
   async removeComment(id: string) {
     const comment = await this.getOneComment(id);
-    if (!comment) {
-      throw new NotFoundException('Comment not found');
-    }
     await this.commentRepository.remove(comment);
     return id;
   }

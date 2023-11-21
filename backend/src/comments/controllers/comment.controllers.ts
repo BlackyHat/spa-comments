@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Delete,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
@@ -23,10 +25,11 @@ export class CommentController {
   async findAll() {
     return await this.commentSevice.getAllComments();
   }
-  @Get('user/:email')
-  async findUserComments(@Param('email') email: string) {
-    return await this.commentSevice.getAllUserComments(email);
+  @Get('search')
+  async findComments(@Req() request: Request) {
+    return await this.commentSevice.findComments(request.query);
   }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.commentSevice.getOneComment(id);

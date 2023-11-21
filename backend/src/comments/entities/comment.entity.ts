@@ -3,13 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-  JoinColumn,
+  TreeChildren,
+  TreeParent,
+  Tree,
 } from 'typeorm';
 import { IsEmail, IsUrl, IsAlphanumeric } from 'class-validator';
 
 @Entity({ name: 'Comment' })
+@Tree('closure-table')
 export class CommentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -34,15 +35,9 @@ export class CommentEntity {
   @Column('varchar', { length: 200, nullable: true })
   attachTxt?: string;
 
-  @ManyToOne(() => CommentEntity, { nullable: true })
-  @JoinColumn({ name: 'parentCommentId' })
-  parentComment: CommentEntity;
+  @TreeChildren()
+  children: CommentEntity[];
 
-  @Column({ nullable: true })
-  parentCommentId: string;
-
-  @OneToMany(() => CommentEntity, (comment) => comment.parentComment, {
-    onDelete: 'CASCADE',
-  })
-  childrenComments: CommentEntity[];
+  @TreeParent({ onDelete: 'CASCADE' })
+  parent: CommentEntity;
 }
