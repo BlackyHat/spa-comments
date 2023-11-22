@@ -7,7 +7,10 @@ import {
   Patch,
   Delete,
   Req,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
@@ -18,16 +21,41 @@ export class CommentController {
   constructor(private readonly commentSevice: CommentService) {}
 
   @Post()
-  async createComment(@Body() createCommentDto: CreateCommentDto) {
-    return await this.commentSevice.createComment(createCommentDto);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'attachImg', maxCount: 1 },
+      {
+        name: 'attachTxt',
+        maxCount: 1,
+      },
+    ]),
+  )
+  async createComment(
+    @Req() req: Request,
+    @Body() createCommentDto: CreateCommentDto,
+    @UploadedFiles()
+    files?: {
+      attachImg?: Express.Multer.File;
+      attachTxt?: Express.Multer.File;
+    },
+  ) {
+    const { host } = req.headers;
+    const protocol = req.secure ? 'https' : 'http';
+    return await this.commentSevice.createComment(
+      createCommentDto,
+      files,
+      protocol,
+      host,
+    );
   }
+
   @Get()
   async findAll() {
     return await this.commentSevice.getAllComments();
   }
   @Get('search')
-  async findComments(@Req() request: Request) {
-    return await this.commentSevice.findComments(request.query);
+  async findComments(@Req() req: Request) {
+    return await this.commentSevice.findComments(req.query);
   }
 
   @Get(':id')
@@ -36,10 +64,25 @@ export class CommentController {
   }
   @Patch(':id')
   async updateComment(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updateCommentDto: UpdateCommentDto,
+    @UploadedFiles()
+    files?: {
+      attachImg?: Express.Multer.File;
+      attachTxt?: Express.Multer.File;
+    },
   ) {
-    return await this.commentSevice.updateComment(id, updateCommentDto);
+    const { host } = req.headers;
+    const protocol = req.secure ? 'https' : 'http';
+
+    return await this.commentSevice.updateComment(
+      id,
+      updateCommentDto,
+      files,
+      protocol,
+      host,
+    );
   }
   @Delete(':id')
   async removeComment(@Param('id') id: string) {

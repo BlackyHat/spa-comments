@@ -9,9 +9,9 @@ export class UpdateCommentDto {
   @IsUrl()
   homePage?: string;
 
+  @IsNotEmpty()
+  text?: string;
+
   @IsOptional()
   parentCommentId?: string;
-  text?: string;
-  attachImg?: string;
-  attachTxt?: string;
 }

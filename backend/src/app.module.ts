@@ -2,13 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentsModule } from './comments/comment.module';
-// import { CommentService } from './comments/services/comment.service';
-// import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-// import { GraphQLModule } from '@nestjs/graphql';
-// import { AuthModule } from './auth/auth.module';
-// import { UsersModule } from './users/users.module';
-// import { CategoryModule } from './category/category.module';
-// import { TasksModule } from './tasks/tasks.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Module({
   imports: [
@@ -28,6 +23,14 @@ import { CommentsModule } from './comments/comment.module';
         autoLoadEntities: true,
         logging: true,
       }),
+    }),
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        dest: config.get<string>('UPLOAD_PATH'),
+        storage: memoryStorage(),
+      }),
+      inject: [ConfigService],
     }),
     CommentsModule,
   ],

@@ -36,3 +36,6 @@ backend/.vscode/*
 !backend/.vscode/tasks.json
 !backend/.vscode/launch.json
 !backend/.vscode/extensions.json
+
+backend/uploads/images/
+backend/uploads/text/
