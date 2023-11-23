@@ -27,8 +27,8 @@ export class CommentEntity {
   @IsUrl()
   homePage?: string;
 
-  @Column('varchar', { length: 1000, nullable: true })
-  text?: string;
+  @Column('varchar', { length: 1000 })
+  text: string;
 
   @Column('varchar', { length: 200, nullable: true })
   attachImg?: string;

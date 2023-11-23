@@ -14,10 +14,11 @@ export class CreateCommentDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+  @IsNotEmpty()
+  text: string;
 
   @IsOptional()
   parentCommentId?: string;
-  text?: string;
   attachImg?: string;
   attachTxt?: string;
 
