@@ -63,6 +63,15 @@ export class CommentController {
     return await this.commentSevice.getOneComment(id);
   }
   @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'attachImg', maxCount: 1 },
+      {
+        name: 'attachTxt',
+        maxCount: 1,
+      },
+    ]),
+  )
   async updateComment(
     @Req() req: Request,
     @Param('id') id: string,

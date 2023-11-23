@@ -91,9 +91,8 @@ export class CommentService {
     protocol: string,
     host: string,
   ) {
-    const { attachImg, attachTxt } = files;
-
     const comment = await this.getOneComment(id);
+    const { attachImg, attachTxt } = files;
     if (attachImg) {
       const path = await this.saveImage(attachImg[0]);
       comment.attachImg = [protocol + ':/', host, path].join('/');
