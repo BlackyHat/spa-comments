@@ -29,14 +29,12 @@ export class CommentService {
     host: string,
   ) {
     const { parentCommentId, ...commentData } = createCommentDTO;
-    const { attachImg, attachTxt } = files;
-
-    if (attachImg) {
-      const path = await this.saveImage(attachImg[0]);
+    if (files.attachImg) {
+      const path = await this.saveImage(files.attachImg[0]);
       commentData.attachImg = [protocol + ':/', host, path].join('/');
     }
-    if (attachTxt) {
-      const path = await this.saveTxtFile(attachTxt[0]);
+    if (files.attachTxt) {
+      const path = await this.saveTxtFile(files.attachTxt[0]);
       commentData.attachTxt = [protocol + ':/', host, path].join('/');
     }
 
@@ -92,13 +90,12 @@ export class CommentService {
     host: string,
   ) {
     const comment = await this.getOneComment(id);
-    const { attachImg, attachTxt } = files;
-    if (attachImg) {
-      const path = await this.saveImage(attachImg[0]);
+    if (files.attachImg) {
+      const path = await this.saveImage(files.attachImg[0]);
       comment.attachImg = [protocol + ':/', host, path].join('/');
     }
-    if (attachTxt) {
-      const path = await this.saveTxtFile(attachTxt[0]);
+    if (files.attachTxt) {
+      const path = await this.saveTxtFile(files.attachTxt[0]);
       comment.attachTxt = [protocol + ':/', host, path].join('/');
     }
 

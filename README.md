@@ -2,7 +2,9 @@
 
 A simple API for comments app which has a self-referencing model, Typescript, NestJS, with PostgreSQL as the database, TypeORM is used to manage the database and the backend uses REST API. All of this is packaged in docker-compose
 
-# [Live Api](https://comments-backend-gixo.onrender.com)👀⚙️🖥️
+# [Live Api](https://comments-backend-gixo.onrender.com)👀⚙️
+
+# [API Documentation](https://documenter.getpostman.com/view/26203555/2s9YXpUJ1f)⚙️🖥️
 
 ##
 
